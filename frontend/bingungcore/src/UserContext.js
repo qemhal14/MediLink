@@ -35,7 +35,7 @@ export const UserProvider = ({ children }) => {
         const userId = decoded.id;
         setCurrentUserId(userId);
 
-        const res = await axios.get(`http://localhost:5000/api/users/${userId}`, getAuthHeaders());
+        const res = await axios.get(`${process.env.REACT_APP_API_URL}/api/users/${userId}`, getAuthHeaders());
 
         if (res.data && res.data.name) {
           setUserName(res.data.name);

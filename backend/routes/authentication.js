@@ -36,6 +36,59 @@ router.post('/register', async (req, res) => {
     }
 });
 
+const seedDemoData = require('../config/demoSeeder');
+
+// Demo Login route
+router.post('/demo-login', async (req, res) => {
+    try {
+        const { role } = req.body;
+        if (!role) {
+            return res.status(400).json({ message: 'Role is required' });
+        }
+
+        // Run the seeder to clean and seed demo database
+        await seedDemoData();
+
+        // Get the email of the target demo user based on the selected role
+        let targetEmail = '';
+        const lowercaseRole = role.toLowerCase();
+        if (lowercaseRole.includes('admin') || lowercaseRole.includes('receptionist')) {
+            targetEmail = 'demo.admin@medilink.com';
+        } else if (lowercaseRole === 'nurse') {
+            targetEmail = 'demo.nurse@medilink.com';
+        } else if (lowercaseRole === 'doctor') {
+            targetEmail = 'demo.doctor@medilink.com';
+        } else {
+            return res.status(400).json({ message: 'Invalid role for demo login' });
+        }
+
+        // Fetch the user
+        const user = await User.findOne({ email: targetEmail });
+        if (!user) {
+            return res.status(404).json({ message: 'Demo user not found' });
+        }
+
+        // Create JWT token
+        const token = jwt.sign({ id: user._id, role: user.role }, JWT_SECRET, {
+            expiresIn: '1d'
+        });
+
+        // Return user info and token
+        return res.json({
+            token,
+            user: {
+                id: user._id,
+                name: user.name,
+                email: user.email,
+                role: user.role
+            }
+        });
+    } catch (error) {
+        console.error('Demo login error:', error);
+        res.status(500).json({ message: 'Failed to initialize demo mode: ' + error.message });
+    }
+});
+
 // Login route
 router.post('/login', (req, res, next) => {
     passport.authenticate('local', { session: false }, (err, user, info) => {

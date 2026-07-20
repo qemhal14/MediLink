@@ -16,6 +16,7 @@ const USERS_API_URL = `${process.env.REACT_APP_API_URL}/api/users`;
 const Dashboard = () => {
   console.log("Dashboard component is rendering.");
   const [patientCount, setPatientCount] = useState(0);
+  const [doctorCount, setDoctorCount] = useState(0);
   const [availableRooms, setAvailableRooms] = useState(0);
   const [todaysAppointments, setTodaysAppointments] = useState([]);
   const [latestAnnouncement, setLatestAnnouncement] = useState(null);
@@ -40,17 +41,18 @@ const Dashboard = () => {
 
     const fetchDashboardData = async () => {
       try {
-        const [patientRes, appointmentRes, announcementRes, roomRes] = await Promise.all([
+        const [patientRes, appointmentRes, announcementRes, roomRes, doctorRes] = await Promise.all([
           axios.get(PATIENTS_API_URL, getAuthHeaders()),
           axios.get(APPOINTMENTS_API_URL, getAuthHeaders()),
           axios.get(ANNOUNCEMENTS_API_URL, getAuthHeaders()),
           axios.get(ROOMS_API_URL, getAuthHeaders()),
+          axios.get(`${USERS_API_URL}/role/doctors`, getAuthHeaders()),
         ]);
 
         setPatientCount(patientRes.data.length);
         const todayApps = appointmentRes.data.filter((app) => isToday(new Date(app.dateTime)));
         setTodaysAppointments(todayApps);
-        setPatientCount(todayApps.length);
+        setDoctorCount(doctorRes.data.length);
 
         if (announcementRes.data.length > 0) {
           const latest = announcementRes.data[0];
@@ -191,7 +193,7 @@ const Dashboard = () => {
             </div>
 
             <div className="bg-white shadow rounded-md p-4 text-center">
-              <h2 className="text-2xl font-bold">13</h2>
+              <h2 className="text-2xl font-bold">{doctorCount}</h2>
 
               <p className="text-gray-600">Doctors</p>
             </div>

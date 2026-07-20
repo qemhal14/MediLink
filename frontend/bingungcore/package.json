@@ -43,6 +43,14 @@
       "last 1 safari version"
     ]
   },
+  "overrides": {
+    "postcss": "^8.4.38",
+    "nth-check": "^2.0.1",
+    "serialize-javascript": "^7.0.7",
+    "underscore": "^1.13.8",
+    "uuid": "^11.1.1",
+    "@tootallnate/once": "^2.0.1"
+  },
   "devDependencies": {
     "autoprefixer": "^10.4.19",
     "postcss": "^8.4.38",

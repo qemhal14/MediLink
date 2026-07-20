@@ -10,6 +10,7 @@ const LoginForm = () => {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [demoStatus, setDemoStatus] = useState("");
   const { refetchUserData } = useUser();
 
   // Input validation states
@@ -124,6 +125,47 @@ const LoginForm = () => {
     }
   };
 
+  const handleDemoLogin = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
+    setDemoStatus("Initializing demo data...");
+    setError("");
+
+    try {
+      const response = await fetch(`${process.env.REACT_APP_API_URL}/api/auth/demo-login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          role: role
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        setDemoStatus("Logging in as Demo...");
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('userRole', data.user.role);
+        localStorage.setItem('userName', data.user.name);
+        localStorage.setItem('userEmail', data.user.email);
+        localStorage.setItem('isAuthenticated', 'true');
+
+        await refetchUserData();
+        navigate('/dashboard');
+      } else {
+        setError(data.message || 'Demo login failed. Please try again.');
+      }
+    } catch (error) {
+      console.error('Demo login error:', error);
+      setError('Network error. Please check your connection and try again.');
+    } finally {
+      setIsLoading(false);
+      setDemoStatus("");
+    }
+  };
+
   return (
     <div className="bg-gray-100 flex items-center justify-center min-h-screen p-4">
       <div className="bg-white p-8 sm:p-12 rounded-2xl shadow-lg w-full max-w-md">
@@ -185,7 +227,7 @@ const LoginForm = () => {
                 className="w-full text-white py-3 px-4 rounded-full font-semibold transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#045ae2] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none"
                 style={{ fontFamily: "Kollektif, sans-serif", backgroundColor: "#045ae2" }}
               >
-                {isLoading ? (
+                {isLoading && !demoStatus ? (
                   <span className="flex items-center justify-center gap-2">
                     <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
@@ -195,6 +237,39 @@ const LoginForm = () => {
                   </span>
                 ) : (
                   "Login"
+                )}
+              </button>
+
+              {/* Divider */}
+              <div className="flex items-center my-4">
+                <div className="flex-grow border-t border-gray-300"></div>
+                <span className="mx-4 text-gray-400 text-sm">or</span>
+                <div className="flex-grow border-t border-gray-300"></div>
+              </div>
+
+              {/* Demo Mode Button */}
+              <button
+                type="button"
+                onClick={handleDemoLogin}
+                disabled={isLoading}
+                className="w-full border-2 border-[#045ae2] text-[#045ae2] bg-transparent py-3 px-4 rounded-full font-semibold transition-transform transform hover:scale-105 hover:bg-blue-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#045ae2] disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-2"
+                style={{ fontFamily: "Kollektif, sans-serif" }}
+              >
+                {demoStatus ? (
+                  <span className="flex items-center justify-center gap-2">
+                    <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-[#045ae2]" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    </svg>
+                    {demoStatus}
+                  </span>
+                ) : (
+                  <>
+                    <svg className="w-5 h-5 text-[#045ae2]" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"></path>
+                    </svg>
+                    Try Demo Mode
+                  </>
                 )}
               </button>
             </form>
