@@ -27,7 +27,7 @@ export const UserProvider = ({ children }) => {
   // Fetch user data from the backend
   const fetchUserData = async () => {
     const token = localStorage.getItem("token");
-    const role = localStorage.getItem("role")?.toLowerCase();
+    const role = (localStorage.getItem("role") || localStorage.getItem("userRole"))?.toLowerCase();
 
     if (token && role) {
       try {
