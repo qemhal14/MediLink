@@ -790,11 +790,10 @@ const PatientCheckup = () => {
         {/* Error Display */}
         {error && (
           <div
-            className={`mb-6 px-4 py-3 rounded-lg border ${
-              error.includes("successfully")
+            className={`mb-6 px-4 py-3 rounded-lg border ${error.includes("successfully")
                 ? "bg-green-50 border-green-200 text-green-700"
                 : "bg-red-50 border-red-200 text-red-700"
-            }`}
+              }`}
           >
             {error}
           </div>
@@ -928,11 +927,10 @@ const PatientCheckup = () => {
                       <button
                         key={checkup._id || index}
                         onClick={() => handleCheckupSelect(checkup)}
-                        className={`w-full text-left p-4 rounded-lg border-2 transition-all ${
-                          selectedCheckup && (selectedCheckup._id === checkup._id || selectedCheckup === checkup)
+                        className={`w-full text-left p-4 rounded-lg border-2 transition-all ${selectedCheckup && (selectedCheckup._id === checkup._id || selectedCheckup === checkup)
                             ? "bg-blue-50 border-blue-200 shadow-sm"
                             : "bg-gray-50 border-transparent hover:bg-gray-100"
-                        }`}
+                          }`}
                       >
                         <div className="flex justify-between items-start">
                           <div className="min-w-0">
@@ -1029,25 +1027,25 @@ const PatientCheckup = () => {
                         )}
                       </div>
                     </div>
-                      {(selectedCheckup.doctorNotes || selectedCheckup.nurseInitialData) && !selectedCheckup.aiResponse && (
-                        <button
-                          onClick={handleAiAnalysis}
-                          disabled={aiAnalysisLoading}
-                          className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
-                        >
-                          {aiAnalysisLoading ? (
-                            <>
-                              <Loader className="w-4 h-4 animate-spin" />
-                              Analyzing...
-                            </>
-                          ) : (
-                            <>
-                              <Brain className="w-4 h-4" />
-                              AI Cross-Check
-                            </>
-                          )}
-                        </button>
-                      )}
+                    {(selectedCheckup.doctorNotes || selectedCheckup.nurseInitialData) && !selectedCheckup.aiResponse && (
+                      <button
+                        onClick={handleAiAnalysis}
+                        disabled={aiAnalysisLoading}
+                        className="flex items-center gap-2 px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors disabled:opacity-50"
+                      >
+                        {aiAnalysisLoading ? (
+                          <>
+                            <Loader className="w-4 h-4 animate-spin" />
+                            Analyzing...
+                          </>
+                        ) : (
+                          <>
+                            <Brain className="w-4 h-4" />
+                            AI Cross-Check
+                          </>
+                        )}
+                      </button>
+                    )}
                   </div>
 
                   {/* Nurse Initial Data Section */}
@@ -1283,8 +1281,8 @@ const PatientCheckup = () => {
                                         <div>
                                           <span className="font-medium">Data Source:</span> {
                                             dataSource === 'nurse_imported' ? '👩‍⚕️ Nurse Import' :
-                                            dataSource === 'direct_entry' ? '👨‍⚕️ Direct Entry' :
-                                            dataSource
+                                              dataSource === 'direct_entry' ? '👨‍⚕️ Direct Entry' :
+                                                dataSource
                                           }
                                         </div>
                                       )}
@@ -1294,7 +1292,7 @@ const PatientCheckup = () => {
                                         </div>
                                       )}
                                       <div>
-                                        <span className="font-medium">AI Model:</span> Gemini 1.5 Flash
+                                        <span className="font-medium">AI Model:</span> Gemini 3.5 Flash
                                       </div>
                                     </div>
                                   </div>

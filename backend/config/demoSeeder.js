@@ -334,7 +334,7 @@ const seedDemoData = async () => {
           confidenceExplanation: 'Typical symptom profile matches upper respiratory tract infection.',
           additionalConsiderations: 'Monitor for signs of secondary bacterial infection.',
           analyzedAt: new Date(),
-          aiModel: 'gemini-1.5-flash',
+          aiModel: 'gemini-3.5-flash',
           analysisVersion: '1.0'
         }
       },
@@ -361,7 +361,7 @@ const seedDemoData = async () => {
           confidenceExplanation: 'Combination of trace edema, dyspnea, and hypertension points to fluid retention and high afterload.',
           additionalConsiderations: 'Monitor renal functions regularly.',
           analyzedAt: new Date(),
-          aiModel: 'gemini-1.5-flash',
+          aiModel: 'gemini-3.5-flash',
           analysisVersion: '1.0'
         }
       }

@@ -1,0 +1,33 @@
+services:
+  # Backend Web Service
+  - type: web
+    name: medilink-backend
+    env: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: MONGO_URI
+        sync: false
+      - key: GOOGLE_AI_API_KEY
+        sync: false
+      - key: PORT
+        value: 5000
+
+  # Frontend Static Site
+  - type: web
+    name: medilink-frontend
+    env: static
+    rootDir: frontend/bingungcore
+    buildCommand: npm install && npm run build
+    publishDir: build
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    envVars:
+      - key: REACT_APP_API_URL
+        fromService:
+          type: web
+          name: medilink-backend
+          property: host

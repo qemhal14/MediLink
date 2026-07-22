@@ -44,7 +44,7 @@ router.post('/analyze-checkup', async (req, res) => {
         });
 
         // Get the generative model
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
 
         // Enhanced prompt for imported nurse data
         const prompt = `You are a medical AI assistant analyzing patient data. This may include initial assessment by a nurse that was imported for doctor review. Analyze this case and respond with ONLY valid JSON (no markdown, no additional text).
@@ -185,7 +185,7 @@ Respond with ONLY this JSON structure (no markdown formatting):
 
             // Add metadata with imported data flag
             analyzedAt: new Date().toISOString(),
-            aiModel: "gemini-1.5-flash",
+            aiModel: "gemini-3.5-flash",
             analysisVersion: "2.1",
             dataSource: symptoms?.includes("Nurse Initial Assessment") ? "nurse_imported" : "direct_entry"
         };
@@ -238,7 +238,7 @@ Respond with ONLY this JSON structure (no markdown formatting):
             confidenceExplanation: `AI service error: ${error.message}`,
             additionalConsiderations: 'Manual clinical review required due to AI service interruption. Consider second opinion if complex case.',
             analyzedAt: new Date().toISOString(),
-            aiModel: "gemini-1.5-flash",
+            aiModel: "gemini-3.5-flash",
             analysisVersion: "2.1",
             dataSource: "error",
             error: true,
@@ -260,7 +260,7 @@ router.get('/health', async (req, res) => {
         console.log('Testing AI service health...');
 
         // Test the AI service with a simple prompt
-        const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+        const model = genAI.getGenerativeModel({ model: "gemini-3.5-flash" });
         const result = await model.generateContent('Respond with exactly: {"status":"healthy"}');
         const response = await result.response;
         const text = response.text();
@@ -271,7 +271,7 @@ router.get('/health', async (req, res) => {
             res.json({
                 status: 'healthy',
                 message: 'AI analysis service is operational',
-                model: 'gemini-1.5-flash',
+                model: 'gemini-3.5-flash',
                 timestamp: new Date().toISOString(),
                 apiKeyConfigured: !!process.env.GOOGLE_AI_API_KEY
             });
@@ -299,7 +299,7 @@ router.get('/stats', async (req, res) => {
     try {
         res.json({
             service: 'Google Generative AI',
-            model: 'gemini-1.5-flash',
+            model: 'gemini-3.5-flash',
             status: process.env.GOOGLE_AI_API_KEY ? 'configured' : 'not_configured',
             version: '2.0',
             features: [
