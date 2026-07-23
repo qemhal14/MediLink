@@ -8,13 +8,12 @@ const Announcement = require('../models/Announcement');
 
 const seedDemoData = async () => {
   try {
-    console.log('--- Starting Demo Data Seeding ---');
+    console.log('--- Starting Demo Data Seeding (Through December 2026) ---');
 
-    // 1. Recreate Demo Users
+    // 1. Recreate Demo Users across all roles
     const salt = await bcrypt.genSalt(10);
     const demoPassword = await bcrypt.hash('password123', salt);
 
-    // Delete existing demo users
     const demoEmails = [
       'demo.admin@medilink.com',
       'demo.nurse@medilink.com',
@@ -75,9 +74,9 @@ const seedDemoData = async () => {
       docGrey.save(),
       nurseJohn.save()
     ]);
-    console.log('Demo user accounts seeded.');
+    console.log('Demo user accounts seeded for all roles.');
 
-    // 2. Clear other collections to prevent duplicate key errors and maintain pristine demo state
+    // 2. Clear collections for pristine demo state
     await Patient.deleteMany({});
     await Appointment.deleteMany({});
     await Checkup.deleteMany({});
@@ -91,13 +90,13 @@ const seedDemoData = async () => {
       roomsToSeed.push({
         name: `Room ${i}`,
         roomNumber: i,
-        status: i % 4 === 0 ? 'Occupied' : 'Available' // 15 available, 5 occupied
+        status: i % 4 === 0 ? 'Occupied' : 'Available'
       });
     }
     const seededRooms = await Room.insertMany(roomsToSeed);
     console.log(`${seededRooms.length} rooms seeded.`);
 
-    // 4. Seed Patients
+    // 4. Seed Patients with Checkup Vitals
     const patientData = [
       {
         nik: '3171012345670001',
@@ -110,7 +109,7 @@ const seedDemoData = async () => {
         medicalHistory: 'Allergy to Penicillin, mild asthma',
         checkups: [
           {
-            date: new Date(Date.now() - 1000 * 60 * 60 * 3), // 3 hours ago
+            date: new Date(Date.now() - 1000 * 60 * 60 * 3),
             temperature: '36.7',
             bloodPressure: '120/80',
             heartRate: '72',
@@ -128,8 +127,18 @@ const seedDemoData = async () => {
         bloodType: 'O-',
         contact: '081298765432',
         address: 'Gatot Subroto St. No. 12, Jakarta',
-        medicalHistory: 'None',
-        checkups: []
+        medicalHistory: 'Migraine history, lactose intolerance',
+        checkups: [
+          {
+            date: new Date(Date.now() - 1000 * 60 * 60 * 2),
+            temperature: '36.9',
+            bloodPressure: '115/75',
+            heartRate: '76',
+            weight: '58',
+            height: '165',
+            notes: 'Complaining of tension headaches after long work hours.'
+          }
+        ]
       },
       {
         nik: '3171012345670003',
@@ -139,10 +148,10 @@ const seedDemoData = async () => {
         bloodType: 'B+',
         contact: '08111222333',
         address: 'Kemang Raya No. 8, Jakarta',
-        medicalHistory: 'Hypertension',
+        medicalHistory: 'Hypertension, high cholesterol',
         checkups: [
           {
-            date: new Date(Date.now() - 1000 * 60 * 60 * 4), // 4 hours ago
+            date: new Date(Date.now() - 1000 * 60 * 60 * 4),
             temperature: '37.2',
             bloodPressure: '140/90',
             heartRate: '85',
@@ -161,7 +170,17 @@ const seedDemoData = async () => {
         contact: '081344556677',
         address: 'Menteng Indah No. 2, Jakarta',
         medicalHistory: 'Type 2 Diabetes',
-        checkups: []
+        checkups: [
+          {
+            date: new Date(Date.now() - 1000 * 60 * 60 * 5),
+            temperature: '36.6',
+            bloodPressure: '122/82',
+            heartRate: '78',
+            weight: '64',
+            height: '168',
+            notes: 'Fasting glucose levels regular. Scheduled routine review.'
+          }
+        ]
       },
       {
         nik: '3171012345670005',
@@ -171,7 +190,7 @@ const seedDemoData = async () => {
         bloodType: 'O+',
         contact: '081555666777',
         address: 'Slipi Jaya St. No. 10, Jakarta',
-        medicalHistory: 'High Cholesterol',
+        medicalHistory: 'High Cholesterol, stress fatigue',
         checkups: []
       },
       {
@@ -182,7 +201,7 @@ const seedDemoData = async () => {
         bloodType: 'A-',
         contact: '081999888777',
         address: 'Rasuna Said St. Block C, Jakarta',
-        medicalHistory: 'Post-traumatic stress disorder',
+        medicalHistory: 'Post-traumatic stress disorder, physical trauma history',
         checkups: []
       }
     ];
@@ -190,132 +209,142 @@ const seedDemoData = async () => {
     const seededPatients = await Patient.insertMany(patientData);
     console.log(`${seededPatients.length} dummy patients seeded.`);
 
-    // 5. Seed Announcements (created by demo admin)
+    // 5. Seed Announcements (Admin Role) up through Dec 2026
     const announcementData = [
       {
-        content: 'System maintenance scheduled for Sunday, July 26th at 22:00 UTC. All services will be offline for 2 hours.',
+        content: 'System maintenance scheduled for Sunday, December 13th, 2026 at 22:00 UTC. All clinic workstations will undergo regular updates.',
         urgency: true,
         author: adminUser._id.toString(),
-        createdAt: new Date()
+        createdAt: new Date('2026-12-01T10:00:00Z')
       },
       {
-        content: 'New medical equipment has been delivered to Room 3 and Room 4. Training session on Tuesday morning.',
+        content: 'Q4 2026 Medical Equipment delivery completed for Room 3 and Room 4. Staff orientation scheduled for next Tuesday morning.',
         urgency: false,
         author: adminUser._id.toString(),
-        createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24) // 1 day ago
+        createdAt: new Date('2026-10-15T09:00:00Z')
+      },
+      {
+        content: 'Annual Healthcare & AI Diagnostics Refresher Workshop set for November 2026. All medical personnel are encouraged to participate.',
+        urgency: false,
+        author: adminUser._id.toString(),
+        createdAt: new Date('2026-08-20T14:30:00Z')
       }
     ];
     await Announcement.insertMany(announcementData);
-    console.log('Announcements seeded.');
+    console.log('Announcements through Dec 2026 seeded.');
 
-    // 6. Seed Appointments to populate weekly and monthly charts
-    const now = new Date();
+    // 6. Seed Appointments from past through DECEMBER 2026 (All Roles)
     const appts = [];
     const doctors = [doctorUser, docHouse, docGrey];
 
-    // Today's appointments
+    // Today's active appointments
     const today = new Date();
-    
-    // Appointment 1: John Doe with Dr. Alexander Pierce
-    const time1 = new Date(today);
-    time1.setHours(9, 0, 0, 0);
+
     appts.push({
       patient: seededPatients[0]._id,
       doctor: doctorUser._id,
-      dateTime: time1,
-      notes: 'Monthly blood pressure review.',
+      dateTime: new Date(today.setHours(9, 0, 0, 0)),
+      notes: 'Monthly blood pressure & vitals review.',
       checkups: [seededPatients[0].checkups[0]]
     });
 
-    // Appointment 2: Jane Smith with Dr. Gregory House
-    const time2 = new Date(today);
-    time2.setHours(11, 30, 0, 0);
     appts.push({
       patient: seededPatients[1]._id,
       doctor: docHouse._id,
-      dateTime: time2,
+      dateTime: new Date(today.setHours(11, 30, 0, 0)),
       notes: 'Consultation regarding persistent leg pain.',
-      checkups: []
+      checkups: [seededPatients[1].checkups[0]]
     });
 
-    // Appointment 3: Robert Downey with Dr. Meredith Grey
-    const time3 = new Date(today);
-    time3.setHours(14, 0, 0, 0);
     appts.push({
       patient: seededPatients[2]._id,
       doctor: docGrey._id,
-      dateTime: time3,
-      notes: 'Cardiac follow-up.',
+      dateTime: new Date(today.setHours(14, 0, 0, 0)),
+      notes: 'Cardiac follow-up checkup.',
       checkups: [seededPatients[2].checkups[0]]
     });
 
-    // Appointment 4: Emily Watson with Dr. Alexander Pierce
-    const time4 = new Date(today);
-    time4.setHours(16, 30, 0, 0);
     appts.push({
       patient: seededPatients[3]._id,
       doctor: doctorUser._id,
-      dateTime: time4,
-      notes: 'Diabetes glucose monitoring checkup.',
-      checkups: []
+      dateTime: new Date(today.setHours(16, 30, 0, 0)),
+      notes: 'Diabetes glucose monitoring & AI evaluation.',
+      checkups: [seededPatients[3].checkups[0]]
     });
 
-    // Generate Weekly appointments (last 7 days) to populate the Line Chart
-    for (let dayOffset = 1; dayOffset <= 6; dayOffset++) {
-      const targetDate = new Date(now);
-      targetDate.setDate(now.getDate() - dayOffset);
-      
-      const count = (dayOffset % 3 === 0) ? 3 : (dayOffset % 2 === 0) ? 2 : 1;
-      for (let j = 0; j < count; j++) {
-        const randomPatient = seededPatients[Math.floor(Math.random() * seededPatients.length)];
-        const randomDoctor = doctors[Math.floor(Math.random() * doctors.length)];
-        const appointmentTime = new Date(targetDate);
-        appointmentTime.setHours(10 + j * 2, 0, 0, 0);
+    // Populate Historical Appointments (Past 6 months up to current date)
+    for (let monthOffset = 1; monthOffset <= 6; monthOffset++) {
+      const targetMonthDate = new Date();
+      targetMonthDate.setMonth(today.getMonth() - monthOffset);
 
-        appts.push({
-          patient: randomPatient._id,
-          doctor: randomDoctor._id,
-          dateTime: appointmentTime,
-          notes: `Routine follow-up clinic checkup.`,
-          checkups: []
-        });
-      }
-    }
-
-    // Generate Monthly appointments (last 6 months) to populate the Bar Chart
-    const monthlyCounts = [8, 12, 15, 10, 14];
-    for (let monthOffset = 1; monthOffset <= 5; monthOffset++) {
-      const targetMonthDate = new Date(now);
-      targetMonthDate.setMonth(now.getMonth() - monthOffset);
-      
-      const countToSeed = monthlyCounts[monthOffset - 1];
+      const countToSeed = 10 + (monthOffset * 2);
       for (let j = 0; j < countToSeed; j++) {
-        const randomPatient = seededPatients[Math.floor(Math.random() * seededPatients.length)];
-        const randomDoctor = doctors[Math.floor(Math.random() * doctors.length)];
+        const randomPatient = seededPatients[j % seededPatients.length];
+        const randomDoctor = doctors[j % doctors.length];
         const apptDate = new Date(targetMonthDate);
         apptDate.setDate(Math.max(1, Math.min(28, j * 2 + 1)));
-        apptDate.setHours(9 + (j % 4), 0, 0, 0);
+        apptDate.setHours(9 + (j % 5), 0, 0, 0);
 
         appts.push({
           patient: randomPatient._id,
           doctor: randomDoctor._id,
           dateTime: apptDate,
-          notes: `Historical clinic visit records.`,
+          notes: `Historical clinical consultation record.`,
           checkups: []
         });
       }
     }
 
-    const seededAppts = await Appointment.insertMany(appts);
-    console.log(`${seededAppts.length} appointments seeded.`);
+    // Populate Future Scheduled Appointments UP UNTIL DECEMBER 2026
+    // Months: August 2026, September 2026, October 2026, November 2026, December 2026
+    const futureMonths = [
+      { year: 2026, month: 7, name: 'August 2026' },     // Month 7 = August (0-indexed)
+      { year: 2026, month: 8, name: 'September 2026' },  // Month 8 = September
+      { year: 2026, month: 9, name: 'October 2026' },    // Month 9 = October
+      { year: 2026, month: 10, name: 'November 2026' },  // Month 10 = November
+      { year: 2026, month: 11, name: 'December 2026' }   // Month 11 = December
+    ];
 
-    // 7. Seed completed doctor checkups (with AI Diagnosis details)
+    const upcomingNotes = [
+      'Routine quarterly clinical checkup and vitals assessment.',
+      'Cardiology follow-up and ECG screening.',
+      'Endocrine glucose control review.',
+      'Pulmonology evaluation for asthma management.',
+      'General health wellness check & lab review.',
+      'Post-treatment follow-up consultation.'
+    ];
+
+    futureMonths.forEach(({ year, month }, monthIdx) => {
+      // Seed 6 to 10 scheduled appointments per month up to Dec 2026
+      const apptCount = 8 + (monthIdx % 3);
+      for (let k = 0; k < apptCount; k++) {
+        const patientObj = seededPatients[k % seededPatients.length];
+        const doctorObj = doctors[k % doctors.length];
+        
+        // Days spread across the month (1st through 28th)
+        const dayOfMonth = Math.min(28, 2 + k * 3);
+        const apptDate = new Date(year, month, dayOfMonth, 9 + (k % 6), 0, 0);
+
+        appts.push({
+          patient: patientObj._id,
+          doctor: doctorObj._id,
+          dateTime: apptDate,
+          notes: upcomingNotes[k % upcomingNotes.length],
+          checkups: []
+        });
+      }
+    });
+
+    const seededAppts = await Appointment.insertMany(appts);
+    console.log(`${seededAppts.length} appointments seeded through December 2026.`);
+
+    // 7. Seed Completed Doctor Checkups & AI Diagnoses (Spanning through December 2026)
     const checkupsData = [
       {
         patientId: seededPatients[0]._id,
-        date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 5), // 5 days ago
+        date: new Date('2026-06-15T10:30:00Z'),
         type: 'General Checkup',
-        symptoms: 'Mild sore throat and runny nose',
+        symptoms: 'Mild sore throat, low-grade fever, and runny nose',
         vitalSigns: {
           temperature: '37.8',
           bloodPressure: '118/78',
@@ -333,14 +362,14 @@ const seedDemoData = async () => {
           confidence: 90,
           confidenceExplanation: 'Typical symptom profile matches upper respiratory tract infection.',
           additionalConsiderations: 'Monitor for signs of secondary bacterial infection.',
-          analyzedAt: new Date(),
-          aiModel: 'gemini-3.5-flash',
+          analyzedAt: new Date('2026-06-15T10:35:00Z'),
+          aiModel: 'gemini-1.5-flash',
           analysisVersion: '1.0'
         }
       },
       {
         patientId: seededPatients[2]._id,
-        date: new Date(Date.now() - 1000 * 60 * 60 * 24 * 10), // 10 days ago
+        date: new Date('2026-08-10T14:15:00Z'),
         type: 'Cardiology Clinic',
         symptoms: 'Shortness of breath on exertion, ankle swelling',
         vitalSigns: {
@@ -357,20 +386,74 @@ const seedDemoData = async () => {
           recommendedActions: 'Perform ECG, measure serum electrolytes, schedule echocardiogram.',
           riskFactors: ['Sedentary lifestyle', 'High sodium intake', 'Family history of CAD'],
           followUpRecommendations: 'Review in clinic in 2 weeks with ECG results.',
-          confidence: 80,
+          confidence: 85,
           confidenceExplanation: 'Combination of trace edema, dyspnea, and hypertension points to fluid retention and high afterload.',
           additionalConsiderations: 'Monitor renal functions regularly.',
-          analyzedAt: new Date(),
-          aiModel: 'gemini-3.5-flash',
+          analyzedAt: new Date('2026-08-10T14:20:00Z'),
+          aiModel: 'gemini-1.5-flash',
+          analysisVersion: '1.0'
+        }
+      },
+      {
+        patientId: seededPatients[3]._id,
+        date: new Date('2026-10-05T11:00:00Z'),
+        type: 'Endocrinology Consultation',
+        symptoms: 'Mild fatigue, increased thirst, routine diabetes check',
+        vitalSigns: {
+          temperature: '36.6',
+          bloodPressure: '124/80',
+          heartRate: '75',
+          weight: '64.5',
+          height: '168'
+        },
+        details: 'HbA1c levels stable at 6.8%. No signs of peripheral neuropathy.',
+        doctorNotes: 'Continued Metformin regimen. Advised maintaining daily physical activity.',
+        aiResponse: {
+          possibleDiagnoses: ['Controlled Type 2 Diabetes Mellitus', 'Mild Metabolic Fatigue'],
+          recommendedActions: 'Maintain current medication dosage, monitor fasting blood glucose 3x weekly.',
+          riskFactors: ['Dietary carbohydrate spikes', 'Sedentary work hours'],
+          followUpRecommendations: 'Schedule follow-up HbA1c review in December 2026.',
+          confidence: 92,
+          confidenceExplanation: 'Glycemic metrics and vital signs indicate well-managed diabetic state.',
+          additionalConsiderations: 'Screen for retinal and kidney microvascular health annually.',
+          analyzedAt: new Date('2026-10-05T11:05:00Z'),
+          aiModel: 'gemini-1.5-flash',
+          analysisVersion: '1.0'
+        }
+      },
+      {
+        patientId: seededPatients[1]._id,
+        date: new Date('2026-12-02T15:30:00Z'),
+        type: 'Neurology Consultation',
+        symptoms: 'Recurrent throbbing migraine, photophobia',
+        vitalSigns: {
+          temperature: '36.8',
+          bloodPressure: '116/74',
+          heartRate: '74',
+          weight: '58.5',
+          height: '165'
+        },
+        details: 'Neurological examination intact. No focal deficits.',
+        doctorNotes: 'Prescribed triptan therapy for acute migraine episodes and stress management guidance.',
+        aiResponse: {
+          possibleDiagnoses: ['Migraine without Aura', 'Tension-Type Headache'],
+          recommendedActions: 'Avoid trigger foods, maintain sleep hygiene, keep headache diary.',
+          riskFactors: ['Screen time fatigue', 'Stress triggers'],
+          followUpRecommendations: 'Follow up in 4 weeks or if headache frequency increases.',
+          confidence: 88,
+          confidenceExplanation: 'Unilateral throbbing pattern with photophobia aligns with classic migraine presentation.',
+          additionalConsiderations: 'Rule out caffeine withdrawal or postural neck strain.',
+          analyzedAt: new Date('2026-12-02T15:35:00Z'),
+          aiModel: 'gemini-1.5-flash',
           analysisVersion: '1.0'
         }
       }
     ];
 
     const seededCheckups = await Checkup.insertMany(checkupsData);
-    console.log(`${seededCheckups.length} completed doctor checkups seeded.`);
+    console.log(`${seededCheckups.length} completed doctor checkups & AI diagnoses seeded through December 2026.`);
 
-    console.log('--- Demo Data Seeding Completed Successfully! 🌱 ---');
+    console.log('--- Demo Data Seeding Completed Successfully up through December 2026! 🌱 ---');
     return {
       adminId: adminUser._id,
       nurseId: nurseUser._id,
